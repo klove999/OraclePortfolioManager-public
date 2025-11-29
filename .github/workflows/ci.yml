@@ -96,63 +96,70 @@ jobs:
           key: portfolio-db-${{ hashFiles('analytics/schema.sql') }}
 
       - name: Apply DB Migrations
-        shell: pwsh
         run: |
-          Write-Host "[STEP] Applying database migrations..." -ForegroundColor Cyan
+          import os
+          import glob
+          import sqlite3
+          import datetime
 
-          $pythonCode = @"
-          import os, sys, sqlite3, glob
+          # Where CI should place the SQLite DB
+          db_path = os.environ.get("ORACLE_DB_PATH", "data/portfolio.db")
+          os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
-          db = os.getenv("ORACLE_DB_PATH", "data/portfolio.db")
-          os.makedirs(os.path.dirname(db), exist_ok=True)
-          conn = sqlite3.connect(db)
-          cur  = conn.cursor()
+          print(f"[INFO] Using DB at: {db_path}")
 
-          # Track applied migrations
-          cur.execute("""CREATE TABLE IF NOT EXISTS schema_migrations(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          filename TEXT UNIQUE NOT NULL,
-          applied_at TEXT DEFAULT (datetime('now'))
-          )""")
+          conn = sqlite3.connect(db_path)
+          cur = conn.cursor()
+
+          # Ensure schema_migrations exists
+          cur.execute("""
+            CREATE TABLE IF NOT EXISTS schema_migrations (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              filename TEXT NOT NULL UNIQUE,
+              applied_at TEXT NOT NULL
+            )
+          """)
           conn.commit()
 
-          files = sorted(glob.glob("analytics/sql/migrate_*.sql"))
+          migrations_dir = os.path.join("analytics", "sql")
+          pattern = os.path.join(migrations_dir, "migrate_*.sql")
+          migration_files = sorted(glob.glob(pattern))
 
-          print(f"[INFO] DB: {db}")
-          print(f"[INFO] Found {len(files)} migration file(s).")
-          if not files:
-            print("[WARN] No migration files found matching analytics/sql/migrate_*.sql")
-            sys.exit(0)  # do not fail the job; just warn
+          if not migration_files:
+            print(f"[WARN] No migration files found under {migrations_dir}")
+          else:
+            print(f"[INFO] Found {len(migration_files)} migration(s).")
 
-          applied = 0
-          for path in files:
-            name = os.path.basename(path)
-            cur.execute("SELECT 1 FROM schema_migrations WHERE filename = ?", (name,))
+          for path in migration_files:
+            filename = os.path.basename(path)
+
+            cur.execute(
+              "SELECT 1 FROM schema_migrations WHERE filename = ?",
+              (filename,)
+            )
             if cur.fetchone():
-              print(f"[SKIP] {name} already applied.")
+              print(f"[SKIP] {filename} already applied.")
               continue
 
-            print(f"[APPLY] {name}")
+            print(f"[APPLY] {filename}")
             with open(path, "r", encoding="utf-8") as f:
-               sql = f.read()
-            try:
-              cur.executescript("BEGIN; " + sql + " ; COMMIT;")
-              cur.execute("INSERT INTO schema_migrations(filename) VALUES (?)", (name,))
-              conn.commit()
-              applied += 1
-              print(f"[OK] {name} applied.")
-            except Exception as e:
-              conn.rollback()
-              print(f"[ERROR] Failed {name}: {e}")
-              sys.exit(1)
+              sql = f.read()
 
-          print(f"[INFO] Migrations applied this run: {applied}")
+            conn.executescript(sql)
+
+            applied_at = datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z"
+            cur.execute(
+              "INSERT INTO schema_migrations (filename, applied_at) VALUES (?, ?)",
+              (filename, applied_at)
+            )
+            conn.commit()
+
           conn.close()
-          "@
-
-            python - << 'PY'
-            $pythonCode
-          PY
+          print("[OK] Migrations applied successfully.")
+        shell: python {0}
+        env:
+          # CI DB lives in the repo workspace; adjust if you ever move it
+          ORACLE_DB_PATH: data/portfolio.db
 
       - name: Sanity Check - DB Schema Exists
         shell: pwsh

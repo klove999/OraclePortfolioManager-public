@@ -13,8 +13,8 @@ Developer-oriented documentation for the Oracle Portfolio Manager project.
   - [Installation](#installation)
     - [Windows](#windows)
     - [PowerShell 7 Setup](#powershell7setup)
-  - [Usage](#usage)
-    - [Running the Integration Check](#runningtheintegrationcheck)
+  - [Development Environments](#development-environments)
+    - [Windows (PowerShell + Python venv)](#windows-powershell--python-venv)
     - [Building and Verifying Bundles](#buildingandverifyingbundles)
   - [Release Workflow](#releaseworkflow)
     - [Preparing a Bundle](#preparingabundle)
@@ -75,6 +75,26 @@ The project follows **semantic versioning** (MAJOR.MINOR.PATCH).  Minor versions
    ```powershell
    where pwsh
    ```
+
+## Development Environments
+
+Oracle Portfolio Manager supports multiple development environments:
+
+### Windows (PowerShell + Python venv)
+
+- Recommended for primary development.
+- Uses the root `Makefile` with PowerShell-friendly targets.
+- Typical setup:
+
+  ```powershell
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+
+  # example targets
+  make dev          # set up dev dependencies, run sanity checks
+  make smoke-test   # run live_update + portfolio_registry smoke tests
+  make release-bundle
 
 ---
 
