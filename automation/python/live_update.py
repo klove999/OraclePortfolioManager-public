@@ -138,8 +138,34 @@ def get_positions():
         conn.close()
     return df
 
+def fetch_live_data():
+    """
+    Fetch live data for all open positions.
+
+    Current behavior (CI-safe stub):
+      - Loads current positions from the local SQLite database
+        via get_positions().
+      - Applies data_quality.filter_and_log() if available.
+
+    This is intentionally simple so that:
+      - CI smoke tests can run without external APIs.
+      - The function can be extended later to pull from
+        Schwab or other live data sources.
+    """
+    df = get_positions()
+
+    # If data_quality.filter_and_log is available, use it.
+    # Otherwise, get_positions() output is returned as-is.
+    try:
+        from data_quality import filter_and_log
+        df = filter_and_log(df)
+    except ImportError:
+        # In CI or minimal environments, just return df unchanged.
+        pass
+
+    return df
+
 df = fetch_live_data()
-df = filter_and_log(df, conn)
 
 def update_db(row_id, mark, iv, delta):
     conn = sqlite3.connect(DB_PATH)
