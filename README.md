@@ -1,28 +1,30 @@
 # Oracle Portfolio Manager v5.0.1 (Stable)
 
-Developer-oriented documentation for the Options Oracle Portfolio Manager project.
+Developer-oriented documentation for the Oracle Portfolio Manager project.
 
 ---
 
 ## Table of Contents
-- [Overview](#overview)
-  - [Highlights](#highlights)
-  - [Versioning](#versioning)
-- [Installation](#installation)
-  - [Windows](#windows)
-  - [PowerShell 7 Setup](#powershell-7-setup)
-- [Usage](#usage)
-  - [Running the Integration Check](#running-the-integration-check)
-  - [Building and Verifying Bundles](#building-and-verifying-bundles)
-- [Release Workflow](#release-workflow)
-  - [Preparing a Bundle](#preparing-a-bundle)
-  - [Verification and Freeze](#verification-and-freeze)
-- [Documentation Standards](#documentation-standards)
+- [Oracle Portfolio Manager v5.0.1 (Stable)](#oracle-portfolio-manager-v501-stable)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+    - [Highlights](#highlights)
+    - [Versioning](#versioning)
+  - [Installation](#installation)
+    - [Windows](#windows)
+    - [PowerShell 7 Setup](#powershell7setup)
+  - [Usage](#usage)
+    - [Running the Integration Check](#runningtheintegrationcheck)
+    - [Building and Verifying Bundles](#buildingandverifyingbundles)
+  - [Release Workflow](#releaseworkflow)
+    - [Preparing a Bundle](#preparingabundle)
+    - [Verification and Freeze](#verificationandfreeze)
+  - [Documentation Standards](#documentationstandards)
 
 ---
 
 ## Overview
-Options Oracle Portfolio Manager (OOPM) v5.0.1 provides a structured automation framework for managing options‑trade data, bundles, and documentation.  It is built around PowerShell and Python scripts that coordinate environment configuration, release bundling, and integrity verification.
+Oracle Portfolio Manager (OOPM) v5.0.1 provides a structured automation framework for managing options‑trade data, bundles, and documentation.  It is built around PowerShell and Python scripts that coordinate environment configuration, release bundling, and integrity verification.
 
 ### Highlights
 - Environment‑aware automation scripts (paths auto‑detected)
@@ -66,7 +68,7 @@ The project follows **semantic versioning** (MAJOR.MINOR.PATCH).  Minor versions
 3. Unblock project scripts:
    ```powershell
    pwsh -NoProfile -Command '
-   Get-ChildItem "C:\Program Files\Options Oracle Portfolio Manager" -Recurse -File -Filter *.ps1 | Unblock-File;
+   Get-ChildItem "C:\Program Files\Oracle Portfolio Manager" -Recurse -File -Filter *.ps1 | Unblock-File;
    Get-ChildItem "D:\Documents\OraclePortfolioManager" -Recurse -File -Filter *.ps1 | Unblock-File'
    ```
 4. Verify `pwsh` is on PATH:
@@ -88,7 +90,7 @@ A **PASS** result indicates that all required components and paths are in place.
 ### Building and Verifying Bundles
 To build and verify a full release bundle:
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\Options Oracle Portfolio Manager\automation\release_bundle.ps1" \
+pwsh -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\Oracle Portfolio Manager\automation\release_bundle.ps1" \
   -Version "v5.0.1" -Date (Get-Date -Format "yyyy-MM-dd")
 ```
 This performs three steps:
@@ -106,11 +108,11 @@ This performs three steps:
 3. Run `release_bundle.ps1` manually or via `make -f Makefile.win release-bundle-now`.
 
 ### Verification and Freeze
-- Output bundle: `D:\Documents\OraclePortfolioManager\Options_OraclePortfolioManager.0.1_Stable_<date>.zip`
+- Output bundle: `D:\Documents\OraclePortfolioManager\OraclePortfolioManager.0.1_Stable_<date>.zip`
 - Verify with:
   ```powershell
-  pwsh -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\Options Oracle Portfolio Manager\verify_bundle.ps1" \
-    -BundleRoot "D:\Documents\OraclePortfolioManager\Options_OraclePortfolioManager.0.1_Stable"
+  pwsh -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\Oracle Portfolio Manager\verify_bundle.ps1" \
+    -BundleRoot "D:\Documents\OraclePortfolioManager\OraclePortfolioManager.0.1_Stable"
   ```
 - Once verified, move the bundle to `D:\Documents\OraclePortfolioManager\bundles` and tag the release in Git if version control is used.
 
