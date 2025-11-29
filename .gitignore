@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Data & caches (keep prod DBs out of the repo)
+data/*.db
+data/*.sqlite
+
+# OS/IDE
+.vscode/settings.json
+.DS_Store
+
+# Secrets
+.env
+.env.*

@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "▶ Run Live Update",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/automation/python/live_update.py",
+      "console": "integratedTerminal",
+      "env": {
+        "ORACLE_ENV": "DEV"
+      }
+    },
+    {
+      "name": "▶ Run Portfolio Registry",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/analytics/portfolio_registry.py",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "▶ Run Smoke Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/run_smoke_tests.py",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "▶ PowerShell: Release Bundle",
+      "type": "PowerShell",
+      "request": "launch",
+      "script": "${workspaceFolder}/automation/release_bundle.ps1",
+      "args": [
+        "-Version",
+        "v5.0.1",
+        "-Date",
+        "${currentDate:yyyy-MM-dd}"
+      ]
+    }
+  ]
+}

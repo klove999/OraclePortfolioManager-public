@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-vscode.powershell",
+    "ms-vscode.makefile-tools",
+    "github.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "yzhang.markdown-all-in-one",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

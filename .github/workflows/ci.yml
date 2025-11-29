@@ -1,0 +1,204 @@
+name: Oracle Portfolio Manager CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Test on Windows
+    runs-on: windows-latest
+    env:
+      ORACLE_DB_PATH: data/portfolio.db
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Dependencies
+        shell: pwsh
+        run: |
+          Write-Host "[STEP] Installing dependencies..."
+          python -m pip install --upgrade pip
+          pip install -r "${{ github.workspace }}/requirements.txt"
+
+      - name: Debug Environment Info
+        shell: pwsh
+        run: |
+          Write-Host "[DEBUG] Python and environment details:"
+          python --version
+          pip list
+
+          Write-Host "`n[DEBUG] Repository Structure:"
+          Get-ChildItem -Path . -Recurse -ErrorAction SilentlyContinue |
+            Select-Object FullName |
+            ForEach-Object { Write-Host $_.FullName }
+
+      - name: Prepare Database
+        shell: pwsh
+        run: |
+          Write-Host "[STEP] Ensuring /data folder and DB exist..."
+
+          $root = $PWD
+          $dbPath = Join-Path $root "data/portfolio.db"
+          $schemaFile = Join-Path $root "analytics/sql/migrate_v5_1.sql"
+          Write-Host "[INFO] Using schema file: $schemaFile"
+
+          $dbDir = Split-Path $dbPath
+          if (-not (Test-Path $dbDir)) {
+              New-Item -ItemType Directory -Path $dbDir | Out-Null
+              Write-Host "[OK] Created database directory."
+          }
+
+          # Create DB if missing
+          if (-not (Test-Path $dbPath)) {
+              Write-Host "[INFO] Creating new SQLite database..."
+              $pythonCode = 'import sqlite3, os; db=r"""' + $dbPath + '"""; os.makedirs(os.path.dirname(db), exist_ok=True); sqlite3.connect(db).close(); print(f"[OK] Created database at {db}")'
+              python -c $pythonCode
+          } else {
+              Write-Host "[INFO] Database already exists."
+          }
+
+          # Check for positions table
+          Write-Host "[INFO] Checking for positions table..."
+          $checkCode = 'import sqlite3, sys; db=r"""' + $dbPath + '"""; conn=sqlite3.connect(db); c=conn.cursor(); c.execute("SELECT name FROM sqlite_master WHERE type=''table'' AND name=''positions''"); print("FOUND" if c.fetchone() else "MISSING"); conn.close()'
+          $result = python -c $checkCode
+
+          if ($result -eq "MISSING") {
+              Write-Host "[INFO] Applying schema migration..."
+              $migrateCode = 'import sqlite3, sys; db=r"""' + $dbPath + '"""; schema=r"""' + $schemaFile + '"""; import os; sql=open(schema,encoding="utf-8").read(); conn=sqlite3.connect(db); conn.executescript(sql); conn.commit(); conn.close(); print("[OK] Schema initialized.")'
+              python -c $migrateCode
+          } else {
+              Write-Host "[INFO] Schema already initialized."
+          }
+
+          Write-Host "[OK] Database preparation complete."
+
+      - name: Cache Database
+        uses: actions/cache@v4
+        with:
+          path: data/portfolio.db
+          key: portfolio-db-${{ hashFiles('analytics/schema.sql') }}
+
+      - name: Apply DB Migrations
+        shell: pwsh
+        run: |
+          Write-Host "[STEP] Applying database migrations..." -ForegroundColor Cyan
+
+          $pythonCode = @"
+          import os, sys, sqlite3, glob
+
+          db = os.getenv("ORACLE_DB_PATH", "data/portfolio.db")
+          os.makedirs(os.path.dirname(db), exist_ok=True)
+          conn = sqlite3.connect(db)
+          cur  = conn.cursor()
+
+          # Track applied migrations
+          cur.execute("""CREATE TABLE IF NOT EXISTS schema_migrations(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          filename TEXT UNIQUE NOT NULL,
+          applied_at TEXT DEFAULT (datetime('now'))
+          )""")
+          conn.commit()
+
+          files = sorted(glob.glob("analytics/sql/migrate_*.sql"))
+
+          print(f"[INFO] DB: {db}")
+          print(f"[INFO] Found {len(files)} migration file(s).")
+          if not files:
+            print("[WARN] No migration files found matching analytics/sql/migrate_*.sql")
+            sys.exit(0)  # do not fail the job; just warn
+
+          applied = 0
+          for path in files:
+            name = os.path.basename(path)
+            cur.execute("SELECT 1 FROM schema_migrations WHERE filename = ?", (name,))
+            if cur.fetchone():
+              print(f"[SKIP] {name} already applied.")
+              continue
+
+            print(f"[APPLY] {name}")
+            with open(path, "r", encoding="utf-8") as f:
+               sql = f.read()
+            try:
+              cur.executescript("BEGIN; " + sql + " ; COMMIT;")
+              cur.execute("INSERT INTO schema_migrations(filename) VALUES (?)", (name,))
+              conn.commit()
+              applied += 1
+              print(f"[OK] {name} applied.")
+            except Exception as e:
+              conn.rollback()
+              print(f"[ERROR] Failed {name}: {e}")
+              sys.exit(1)
+
+          print(f"[INFO] Migrations applied this run: {applied}")
+          conn.close()
+          "@
+
+            python - << 'PY'
+            $pythonCode
+          PY
+
+      - name: Sanity Check - DB Schema Exists
+        shell: pwsh
+        run: |
+         Write-Host "[STEP] Verifying DB schema integrity..."
+
+         $pythonCode = @"
+         import sqlite3, os, sys
+
+         db_path = os.getenv('ORACLE_DB_PATH', 'data/portfolio.db')
+
+         if not os.path.exists(db_path):
+             print(f"[ERROR] Database not found at {db_path}")
+             sys.exit(1)
+
+         conn = sqlite3.connect(db_path)
+         cur = conn.cursor()
+
+         # Check for required tables
+         tables = ['positions', 'trades', 'greeks_log']
+         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+         existing = {row[0] for row in cur.fetchall()}
+
+         missing = [t for t in tables if t not in existing]
+         if missing:
+             print(f"[ERROR] Missing tables: {', '.join(missing)}")
+             sys.exit(1)
+         else:
+             print("[OK] All required tables exist.")
+
+         conn.close()
+         "@
+
+         python -c $pythonCode
+
+      - name: Run Smoke Test
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: |
+          Write-Host "[STEP] Running smoke test: live_update.py"
+          cd automation/python
+          python live_update.py
+
+      - name: Upload Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-logs
+          path: logs/

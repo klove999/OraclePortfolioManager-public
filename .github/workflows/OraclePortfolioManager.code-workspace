@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
+		"terminal.integrated.env.windows": {
+			"PYTHONIOENCODING": "utf-8"
+		},
+		"notebook.cellToolbarVisibility": "hover",
+		"notebook.output.textLineLimit": 1000,
+		"git.confirmSync": false,
+		"makefile.configureOnOpen": false
+	}
+}
