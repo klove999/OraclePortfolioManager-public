@@ -28,8 +28,8 @@ param(
 if (-not $AutomationPath) {
     if (Test-Path (Join-Path $PSScriptRoot 'automation')) {
         $AutomationPath = Join-Path $PSScriptRoot 'automation'
-    } elseif (Test-Path 'C:\Program Files\Options Oracle Portfolio Manager\automation') {
-        $AutomationPath = 'C:\Program Files\Options Oracle Portfolio Manager\automation'
+    } elseif (Test-Path 'C:\Program Files\Oracle Portfolio Manager\automation') {
+        $AutomationPath = 'C:\Program Files\Oracle Portfolio Manager\automation'
     }
 }
 
@@ -57,8 +57,8 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 $automationSrc = if (Test-Path (Join-Path $scriptRoot 'automation')) {
     Join-Path $scriptRoot 'automation'
-} elseif (Test-Path 'C:\Program Files\Options Oracle Portfolio Manager\automation') {
-    'C:\Program Files\Options Oracle Portfolio Manager\automation'
+} elseif (Test-Path 'C:\Program Files\Oracle Portfolio Manager\automation') {
+    'C:\Program Files\Oracle Portfolio Manager\automation'
 } else {
     Write-Warn "[WARN] Could not locate automation folder automatically."
     $null

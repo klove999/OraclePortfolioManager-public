@@ -5,7 +5,7 @@ update_contracts.py — update contract count for an existing position.
 import sqlite3
 from pathlib import Path
 
-db_path = Path(r"D:\Documents\Oracle_Portfolio_Manager_v5\data\portfolio.db")
+db_path = Path(r"D:\Documents\OraclePortfolioManager\data\portfolio.db")
 conn = sqlite3.connect(db_path)
 cur = conn.cursor()
 

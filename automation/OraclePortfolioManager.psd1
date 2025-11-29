@@ -2,32 +2,32 @@
     # ─────────────────────────────
     # Module Identity
     # ─────────────────────────────
-    RootModule        = 'OraclePortfolioManager.psm1'
-    ModuleVersion     = '5.0.4'
-    GUID              = '9b1bca1b-23c4-4d7a-b154-8a2a1b47fa1b'
-    Author            = 'Oracle (for Kirk)'
-    CompanyName       = 'The Options Oracle Project'
-    Copyright         = '(c) 2025 The Options Oracle Project. All rights reserved.'
-    Description       = 'Automated environment setup, verification, and release management for the Options Oracle Portfolio Manager project.'
-    PowerShellVersion = '7.0'
+    RootModule           = 'OraclePortfolioManager.psm1'
+    ModuleVersion        = '5.0.4'
+    GUID                 = '9b1bca1b-23c4-4d7a-b154-8a2a1b47fa1b'
+    Author               = 'Oracle (for Kirk)'
+    CompanyName          = 'The Oracle Portfolio Manager Project'
+    Copyright            = '(c) 2025 The Oracle Portfolio Manager Project. All rights reserved.'
+    Description          = 'Automated environment setup, verification, and release management for the Oracle Portfolio Manager project.'
+    PowerShellVersion    = '7.0'
     CompatiblePSEditions = @('Core', 'Desktop')
 
     # ─────────────────────────────
     # Module Components
     # ─────────────────────────────
-    FunctionsToExport = @(
+    FunctionsToExport    = @(
         'Invoke-SetupEnvironment',
         'Invoke-VerifyBundle',
         'Invoke-ReleaseBundle'
     )
-    CmdletsToExport   = @()
-    VariablesToExport = '*'
-    AliasesToExport   = @()
+    CmdletsToExport      = @()
+    VariablesToExport    = '*'
+    AliasesToExport      = @()
 
     # ─────────────────────────────
     # Scripts and Assemblies
     # ─────────────────────────────
-    FileList = @(
+    FileList             = @(
         'setup_environment.ps1',
         'release_bundle.ps1',
         'verify_bundle.ps1',
@@ -37,12 +37,12 @@
         'repair_checksums_v2.ps1'
     )
 
-    PrivateData = @{
+    PrivateData          = @{
         PSData = @{
-            Tags        = @('Oracle', 'Options', 'Portfolio', 'Automation', 'Release', 'CI/CD')
-            LicenseUri  = 'https://opensource.org/licenses/MIT'
-            ProjectUri  = 'https://github.com/KirkTheOracle/OraclePortfolioManager'
-            IconUri     = 'https://example.com/oracle-icon.png'
+            Tags         = @('Oracle', 'Options', 'Portfolio', 'Automation', 'Release', 'CI/CD')
+            LicenseUri   = 'https://opensource.org/licenses/MIT'
+            ProjectUri   = 'https://github.com/KirkTheOracle/OraclePortfolioManager'
+            IconUri      = 'https://example.com/oracle-icon.png'
             ReleaseNotes = @'
 v5.0.4 — Converted Oracle Portfolio Manager automation to a PowerShell module.
 Includes:
@@ -53,5 +53,5 @@ Includes:
         }
     }
 
-    HelpInfoURI = 'https://docs.optionsoracle.io/powershell-module'
+    HelpInfoURI          = 'https://docs.optionsoracle.io/powershell-module'
 }

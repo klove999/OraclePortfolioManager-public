@@ -1,5 +1,5 @@
 ﻿<#
-paths_config.ps1 - Environment path configuration for Options Oracle Portfolio Manager
+paths_config.ps1 - Environment path configuration for Oracle Portfolio Manager
 Version: v5.0.1
 Author: Oracle (for Kirk)
 Date: 2025-10-26
@@ -9,10 +9,10 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 # --- Detect roots ---
-$programRoot = 'C:\Program Files\Options Oracle Portfolio Manager'
-$dataRoot    = 'D:\Documents\Oracle_Portfolio_Manager_v5'
+$programRoot = 'C:\Program Files\Oracle Portfolio Manager'
+$dataRoot    = 'D:\Documents\OraclePortfolioManager'
 # --- Derived paths ---
-$bundleRoot  = Join-Path $dataRoot 'Options_Oracle_Portfolio_Manager_v5.0.1_Stable'
+$bundleRoot  = Join-Path $dataRoot 'Options_OraclePortfolioManager.0.1_Stable'
 $logsPath    = Join-Path $dataRoot 'logs'
 $dataPath    = Join-Path $dataRoot 'data'
 $configPath  = Join-Path $dataRoot 'config'
@@ -45,7 +45,7 @@ foreach ($p in $paths) {
 }
 if (-not $Quiet) {
   Write-Host ''
-  Write-Host 'Options Oracle Portfolio Manager Environment Summary' -ForegroundColor Cyan
+  Write-Host 'Oracle Portfolio Manager Environment Summary' -ForegroundColor Cyan
   Write-Host '------------------------------------------------------'
   Write-Host ('Program Root : {0}' -f $programRoot)
   Write-Host ('Data Root    : {0}' -f $dataRoot)

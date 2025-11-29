@@ -5,10 +5,10 @@ Date   : 2025-10-27
 Purpose: Invokes Python-based multi-trade analysis
 #>
 
-$pyDir = "D:\Documents\Oracle_Portfolio_Manager_v5\automation\python"
+$pyDir = "D:\Documents\OraclePortfolioManager\automation\python"
 $registry = Join-Path $pyDir "trade_registry.py"
 $analyzer = Join-Path $pyDir "analyze_positions.py"
-$portfolioCsv = "D:\Documents\Oracle_Portfolio_Manager_v5\portfolio.csv"
+$portfolioCsv = "D:\Documents\OraclePortfolioManager\portfolio.csv"
 
 if (-not (Test-Path $portfolioCsv)) {
   Write-Host "[INFO] No portfolio.csv found — creating baseline." -ForegroundColor Yellow

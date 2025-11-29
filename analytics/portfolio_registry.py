@@ -16,7 +16,7 @@ from colorama import init, Fore, Style
 
 init(autoreset=True)
 
-DB_PATH = r"D:\Documents\Oracle_Portfolio_Manager_v5\data\portfolio.db"
+DB_PATH = r"D:\Documents\OraclePortfolioManager\data\portfolio.db"
 
 # --------------------------------------------------------------------
 # Utility functions

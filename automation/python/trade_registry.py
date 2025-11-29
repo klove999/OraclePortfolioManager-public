@@ -11,7 +11,7 @@ class TradeRegistry:
     """Manages active short option positions in the Oracle Portfolio Manager."""
 
     def __init__(self, registry_path=None):
-        default_path = Path.home() / "Documents" / "Oracle_Portfolio_Manager_v5" / "portfolio.csv"
+        default_path = Path.home() / "Documents" / "OraclePortfolioManager" / "portfolio.csv"
         self.registry_path = Path(registry_path) if registry_path else default_path
         self.columns = [
             "Symbol", "Strategy", "Strike", "Expiration",

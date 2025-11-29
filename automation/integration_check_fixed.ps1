@@ -1,5 +1,5 @@
-﻿<# 
-integration_check.ps1 â€” Environment diagnostic for Options Oracle Portfolio Manager v5
+﻿<#
+integration_check.ps1 â€” Environment diagnostic for Oracle Portfolio Manager v5
 Version: v5.0.1
 Author: Oracle (for Kirk)
 Date: 2025-10-26

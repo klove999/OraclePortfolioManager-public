@@ -1,4 +1,4 @@
-# Options Oracle Portfolio Manager v5.0.1 (Stable)
+# Oracle Portfolio Manager v5.0.1 (Stable)
 
 Developer-oriented documentation for the Options Oracle Portfolio Manager project.
 
@@ -54,7 +54,7 @@ The project follows **semantic versioning** (MAJOR.MINOR.PATCH).  Minor versions
    ```
 5. Place data directories under:
    ```
-   D:\Documents\Oracle_Portfolio_Manager_v5\
+   D:\Documents\OraclePortfolioManager\
    ```
 
 ### PowerShell 7 Setup
@@ -67,7 +67,7 @@ The project follows **semantic versioning** (MAJOR.MINOR.PATCH).  Minor versions
    ```powershell
    pwsh -NoProfile -Command '
    Get-ChildItem "C:\Program Files\Options Oracle Portfolio Manager" -Recurse -File -Filter *.ps1 | Unblock-File;
-   Get-ChildItem "D:\Documents\Oracle_Portfolio_Manager_v5" -Recurse -File -Filter *.ps1 | Unblock-File'
+   Get-ChildItem "D:\Documents\OraclePortfolioManager" -Recurse -File -Filter *.ps1 | Unblock-File'
    ```
 4. Verify `pwsh` is on PATH:
    ```powershell
@@ -81,7 +81,7 @@ The project follows **semantic versioning** (MAJOR.MINOR.PATCH).  Minor versions
 ### Running the Integration Check
 Confirm environment alignment before any bundle build:
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File D:\Documents\Oracle_Portfolio_Manager_v5\automation\integration_check.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File D:\Documents\OraclePortfolioManager\automation\integration_check.ps1
 ```
 A **PASS** result indicates that all required components and paths are in place.
 
@@ -106,13 +106,13 @@ This performs three steps:
 3. Run `release_bundle.ps1` manually or via `make -f Makefile.win release-bundle-now`.
 
 ### Verification and Freeze
-- Output bundle: `D:\Documents\Oracle_Portfolio_Manager_v5\Options_Oracle_Portfolio_Manager_v5.0.1_Stable_<date>.zip`
+- Output bundle: `D:\Documents\OraclePortfolioManager\Options_OraclePortfolioManager.0.1_Stable_<date>.zip`
 - Verify with:
   ```powershell
   pwsh -NoProfile -ExecutionPolicy Bypass -File "C:\Program Files\Options Oracle Portfolio Manager\verify_bundle.ps1" \
-    -BundleRoot "D:\Documents\Oracle_Portfolio_Manager_v5\Options_Oracle_Portfolio_Manager_v5.0.1_Stable"
+    -BundleRoot "D:\Documents\OraclePortfolioManager\Options_OraclePortfolioManager.0.1_Stable"
   ```
-- Once verified, move the bundle to `D:\Documents\Oracle_Portfolio_Manager_v5\bundles` and tag the release in Git if version control is used.
+- Once verified, move the bundle to `D:\Documents\OraclePortfolioManager\bundles` and tag the release in Git if version control is used.
 
 ---
 

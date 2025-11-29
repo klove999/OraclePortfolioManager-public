@@ -21,7 +21,7 @@ function Invoke-SetupEnvironment {
 
 function Invoke-VerifyBundle {
     param(
-        [string]$BundleRoot = (Join-Path $env:USERPROFILE 'Documents\Oracle_Portfolio_Manager_v5'),
+        [string]$BundleRoot = (Join-Path $env:USERPROFILE 'Documents\OraclePortfolioManager'),
         [switch]$Quiet
     )
     & (Join-Path $AutomationRoot 'verify_bundle.ps1') @PSBoundParameters

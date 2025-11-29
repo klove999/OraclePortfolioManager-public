@@ -1,5 +1,5 @@
-<# 
-integration_check.ps1 — Environment diagnostic for Options Oracle Portfolio Manager v5
+<#
+integration_check.ps1 — Environment diagnostic for Oracle Portfolio Manager v5
 Version: v5.0.1
 Author: Oracle (for Kirk)
 Date: 2025-10-26
@@ -26,7 +26,7 @@ $envInfo = & $pathsScript -Quiet
 $projRoot    = Split-Path -Parent $scriptDir              # parent of automation\
 $programRoot = if ($envInfo.ProgramRoot) { $envInfo.ProgramRoot } else { $projRoot }
 $dataRoot    = if ($envInfo.DataRoot)    { $envInfo.DataRoot }    else { $projRoot }
-$bundleRoot  = if ($envInfo.BundleRoot)  { $envInfo.BundleRoot }  else { Join-Path $dataRoot 'Options_Oracle_Portfolio_Manager_v5.0.1_Stable' }
+$bundleRoot  = if ($envInfo.BundleRoot)  { $envInfo.BundleRoot }  else { Join-Path $dataRoot 'Options_OraclePortfolioManager.0.1_Stable' }
 
 Write-Info ('[INFO] Program Root : {0}' -f $programRoot)
 Write-Info ('[INFO] Data Root    : {0}' -f $dataRoot)

@@ -1,5 +1,5 @@
 <#
-run_smoke_test.ps1 — Options Oracle Portfolio Manager (Smoke Test)
+run_smoke_test.ps1 — Oracle Portfolio Manager (Smoke Test)
 Version : 1.0
 Author  : Oracle (for Kirk)
 Date    : 2025-10-27

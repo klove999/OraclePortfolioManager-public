@@ -1,5 +1,5 @@
 <#
-release_bundle.ps1 — Options Oracle Portfolio Manager
+release_bundle.ps1 — Oracle Portfolio Manager
 Version: v5.0.1 (Quiet Builder + BUNDLE_ROOT + Clean Verify)
 Author: Oracle (for Kirk)
 Date: 2025-10-27
@@ -24,13 +24,13 @@ function Write-Ok($m){ Write-Host $m -ForegroundColor Green }
 function Write-Warn($m){ Write-Host $m -ForegroundColor Yellow }
 function Write-Err($m){ Write-Host $m -ForegroundColor Red }
 
-Write-Host "=== Options Oracle Portfolio Manager — Release Bundle ===" -ForegroundColor Cyan
+Write-Host "=== Oracle Portfolio Manager — Release Bundle ===" -ForegroundColor Cyan
 Write-Info ("Version: {0}" -f $Version)
 Write-Info ("Date   : {0}" -f $Date)
 Write-Host ""
 
 # --- Fixed program paths ---
-$programRoot = 'C:\Program Files\Options Oracle Portfolio Manager'
+$programRoot = 'C:\Program Files\Oracle Portfolio Manager'
 $autoRoot    = Join-Path $programRoot 'automation'
 
 $bundlerPs1  = Join-Path $autoRoot 'make_v5_bundle.ps1'
@@ -45,7 +45,7 @@ foreach ($path in @($bundlerPs1,$repairPs1,$verifierPs1)) {
 }
 
 # --- Bundle root (env first, then default) ---
-$bundleRoot = if ($env:BUNDLE_ROOT) { $env:BUNDLE_ROOT } else { "D:\Documents\Oracle_Portfolio_Manager_v5\bundles" }
+$bundleRoot = if ($env:BUNDLE_ROOT) { $env:BUNDLE_ROOT } else { "D:\Documents\OraclePortfolioManager\bundles" }
 if (-not (Test-Path $bundleRoot)) { New-Item -ItemType Directory -Force -Path $bundleRoot | Out-Null }
 
 # --- Execute bundle creation quietly ---

@@ -1,5 +1,5 @@
 <#
-setup_environment.ps1 — Options Oracle Portfolio Manager
+setup_environment.ps1 — Oracle Portfolio Manager
 Version : v5.0.5  (Quiet + Logging + SHA256 Summary + Return Codes + Structured Flow)
 Author  : Oracle (for Kirk)
 Date    : 2025-10-27
@@ -40,15 +40,15 @@ function Write-Warn($m){ if (-not $Quiet){Write-Host $m -ForegroundColor Yellow}
 function Write-Err($m){  if (-not $Quiet){Write-Host $m -ForegroundColor Red};   if($LogStream){$LogStream.WriteLine($m)}; $script:ExitCode = 2 }
 
 if (-not $Quiet) {
-    Write-Host "=== Options Oracle Portfolio Manager — Environment Setup ===" -ForegroundColor Cyan
+    Write-Host "=== Oracle Portfolio Manager — Environment Setup ===" -ForegroundColor Cyan
     Write-Info ("Timestamp: {0}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))
     Write-Host ""
 }
 
 # --- expected paths ---
-$programRoot = "C:\Program Files\Options Oracle Portfolio Manager"
+$programRoot = "C:\Program Files\Oracle Portfolio Manager"
 $autoDir     = Join-Path $programRoot "automation"
-$dataRoot    = "D:\Documents\Oracle_Portfolio_Manager_v5"
+$dataRoot    = "D:\Documents\OraclePortfolioManager"
 $subDirs     = @("logs","docs","exports","bundles","automation")
 $autoFiles   = @("release_bundle.ps1","make_v5_bundle.ps1","verify_bundle.ps1","repair_checksums_v2.ps1","paths_config.ps1","integration_check.ps1")
 

@@ -6,7 +6,7 @@ Date    : 2025-10-27
 #>
 
 $pythonPath = "python"
-$scriptPath = "D:\Documents\Oracle_Portfolio_Manager_v5\analytics\portfolio_registry.py"
+$scriptPath = "D:\Documents\OraclePortfolioManager\analytics\portfolio_registry.py"
 
 if (-not (Test-Path $scriptPath)) {
     Write-Host "[ERROR] Portfolio registry script not found at: $scriptPath" -ForegroundColor Red

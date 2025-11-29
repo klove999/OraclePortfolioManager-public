@@ -25,7 +25,7 @@ if ($CustomRoot) {
   $bundleRoot = $env:BUNDLE_ROOT
   Write-Host ("[INFO] Using existing BUNDLE_ROOT: {0}" -f $bundleRoot) -ForegroundColor Cyan
 } else {
-  $bundleRoot = "D:\Documents\Oracle_Portfolio_Manager_v5\bundles"
+  $bundleRoot = "D:\Documents\OraclePortfolioManager\bundles"
   Write-Host ("[INFO] Defaulting to standard bundle root: {0}" -f $bundleRoot) -ForegroundColor Cyan
 }
 

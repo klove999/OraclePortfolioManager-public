@@ -1,17 +1,51 @@
-# Python
+# --- Python / virtualenv ---
 .venv/
 __pycache__/
 *.pyc
 *.pyo
 
+# Coverage /testing
+.coverage
+htmlcov/
+.pytest_cache/
+
 # Data & caches (keep prod DBs out of the repo)
 data/*.db
 data/*.sqlite
+data/*.db3
 
-# OS/IDE
-.vscode/settings.json
-.DS_Store
+# If you ever create cache folders for analytics:
+data/cache/
+tmp/
+temp/
 
-# Secrets
+# --- Logs, bundles, exports ---
+logs/
+bundles/
+exports/
+*.log
+*.zip
+*.tar
+*.gz
+*.csv
+*.tsv
+*.xlsx
+
+# --- Local config / machine-specific files ---
+# Recommend: keep a paths_config.template.json in git,
+# and ignore the machine-specific version:
+paths_config.json
+
+# Generic env files
 .env
 .env.*
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/settings.json
+
+# VS Code: keep project-wide configs, but ignore local workspace overrides if used
+.vscode/*.code-workspace
+.vscode/*local*.json

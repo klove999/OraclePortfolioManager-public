@@ -1,5 +1,5 @@
 <#
-make_v5_bundle.ps1 — Options Oracle Portfolio Manager
+make_v5_bundle.ps1 — Oracle Portfolio Manager
 Version: v5.0.1 (BUNDLE_ROOT + Quiet + Self-Source Safe)
 Author: Oracle (for Kirk)
 Date: 2025-10-27
@@ -28,7 +28,7 @@ function Write-Err($m){ Write-Host $m -ForegroundColor Red }
 if (-not $Quiet) { Write-Info "[STEP] Starting bundle build process..." }
 
 # --- Bases ---
-$dataRoot   = "D:\Documents\Oracle_Portfolio_Manager_v5"
+$dataRoot   = "D:\Documents\OraclePortfolioManager"
 $bundleRoot = if ($env:BUNDLE_ROOT) { $env:BUNDLE_ROOT } else { Join-Path $dataRoot 'bundles' }
 if (-not (Test-Path $bundleRoot)) { New-Item -ItemType Directory -Force -Path $bundleRoot | Out-Null }
 

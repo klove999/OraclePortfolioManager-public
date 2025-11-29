@@ -10,7 +10,7 @@ Purpose:
     2. Repairs bundle checksums
     3. Verifies all checksums
     4. Archives and logs results
-  Automatically detects $env:BUNDLE_ROOT or defaults to D:\Documents\Oracle_Portfolio_Manager_v5\bundles.
+  Automatically detects $env:BUNDLE_ROOT or defaults to D:\Documents\OraclePortfolioManager\bundles.
 #>
 
 param(
@@ -34,9 +34,9 @@ Write-Info ("Date   : {0}" -f $Date)
 Write-Host ""
 
 # --- Resolve key paths ---
-$programRoot = "C:\Program Files\Options Oracle Portfolio Manager"
+$programRoot = "C:\Program Files\Oracle Portfolio Manager"
 $autoRoot    = Join-Path $programRoot "automation"
-$bundleRoot  = if ($env:BUNDLE_ROOT) { $env:BUNDLE_ROOT } else { "D:\Documents\Oracle_Portfolio_Manager_v5\bundles" }
+$bundleRoot  = if ($env:BUNDLE_ROOT) { $env:BUNDLE_ROOT } else { "D:\Documents\OraclePortfolioManager\bundles" }
 
 $makePs1     = Join-Path $autoRoot "make_v5_bundle.ps1"
 $repairPs1   = Join-Path $autoRoot "repair_checksums_v2.ps1"
