@@ -6,7 +6,7 @@
 ---
 
 ## 🎯 Purpose
-This document defines the standards and expectations for maintaining, testing, and extending the **Oracle Portfolio Manager** framework.
+This document defines the standards and expectations for maintaining, testing, and extending **The Options Oracle Methodology** framework.
 Its purpose is to preserve **discipline, precision, and traceability** throughout the project lifecycle.
 
 ---

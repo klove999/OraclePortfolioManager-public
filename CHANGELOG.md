@@ -3,6 +3,9 @@
 
 ## Changelog Format Standard *(Added 2025-10-25)*
 
+**Framework:** The Options Oracle Methodology
+**Author:** Edward Corona
+
 All entries follow a consistent developer-oriented structure for automated parsing and release documentation:
 
 ```
@@ -22,9 +25,6 @@ Future roadmap entries use the format:
 ---
 
 ## Version 5.0 — October 2025
-
-**Framework:** The Options Oracle Methodology
-**Author:** Edward Corona
 
 ### Highlights
 - Full project refactor into modular `/src/`, `/data/`, `/docs/`, and `/tests/` structure.
