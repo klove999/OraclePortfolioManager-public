@@ -7,13 +7,13 @@ Date: 2025-10-26
 
 $ErrorActionPreference = 'Stop'
 
-function Write-Info($m){ Write-Host $m -ForegroundColor Cyan }
-function Write-Ok($m){ Write-Host $m -ForegroundColor Green }
-function Write-Warn($m){ Write-Host $m -ForegroundColor Yellow }
-function Write-Err($m){ Write-Host $m -ForegroundColor Red }
+function Write-Info($m) { Write-Host $m -ForegroundColor Cyan }
+function Write-Ok($m) { Write-Host $m -ForegroundColor Green }
+function Write-Warn($m) { Write-Host $m -ForegroundColor Yellow }
+function Write-Err($m) { Write-Host $m -ForegroundColor Red }
 
 Write-Info '[STEP] Loading environment configuration...'
-$scriptDir  = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $pathsScript = Join-Path $scriptDir 'paths_config.ps1'
 if (-not (Test-Path $pathsScript)) {
     Write-Err '[ERROR] paths_config.ps1 missing from automation folder.'
@@ -23,10 +23,10 @@ if (-not (Test-Path $pathsScript)) {
 $envInfo = & $pathsScript -Quiet
 
 # Robust fallbacks
-$projRoot    = Split-Path -Parent $scriptDir              # parent of automation\
+$projRoot = Split-Path -Parent $scriptDir              # parent of automation\
 $programRoot = if ($envInfo.ProgramRoot) { $envInfo.ProgramRoot } else { $projRoot }
-$dataRoot    = if ($envInfo.DataRoot)    { $envInfo.DataRoot }    else { $projRoot }
-$bundleRoot  = if ($envInfo.BundleRoot)  { $envInfo.BundleRoot }  else { Join-Path $dataRoot 'Options_OraclePortfolioManager.0.1_Stable' }
+$dataRoot = if ($envInfo.DataRoot) { $envInfo.DataRoot }    else { $projRoot }
+$bundleRoot = if ($envInfo.BundleRoot) { $envInfo.BundleRoot }  else { Join-Path $dataRoot 'Options_OraclePortfolioManager.0.1_Stable' }
 
 Write-Info ('[INFO] Program Root : {0}' -f $programRoot)
 Write-Info ('[INFO] Data Root    : {0}' -f $dataRoot)
@@ -51,14 +51,14 @@ $verifyBundleCandidates = @(
     (Join-Path $projRoot    'verify_bundle.ps1')
 )
 $docsRefreshCandidates = @(
-    (Join-Path $programRoot 'automation\docs_refresh.py'),
-    (Join-Path $projRoot    'automation\docs_refresh.py')
+    (Join-Path $programRoot 'automation\python\docs_refresh.py'),
+    (Join-Path $projRoot    'automation\python\docs_refresh.py')
 )
 
 $releaseBundlePath = Find-First $releaseBundleCandidates
-$verifyBundlePath  = Find-First $verifyBundleCandidates
-$docsRefreshPath   = Find-First $docsRefreshCandidates
-$checksumPath      = Join-Path $bundleRoot 'bundle_checksum.txt'
+$verifyBundlePath = Find-First $verifyBundleCandidates
+$docsRefreshPath = Find-First $docsRefreshCandidates
+$checksumPath = Join-Path $bundleRoot 'bundle_checksum.txt'
 
 # --- File existence checks ---
 $checks = @(
@@ -73,13 +73,14 @@ $missing = @()
 foreach ($c in $checks) {
     if ($c.Path -and (Test-Path $c.Path)) {
         Write-Ok ('[PASS] Found {0}: {1}' -f $c.Name, $c.Path)
-    } else {
+    }
+    else {
         # Show the main expected path when missing
         $exp = switch ($c.Name) {
-            'release_bundle.ps1'  { ($releaseBundleCandidates -join '; ') }
-            'verify_bundle.ps1'   { ($verifyBundleCandidates  -join '; ') }
-            'docs_refresh.py'     { ($docsRefreshCandidates   -join '; ') }
-            default               { $c.Path }
+            'release_bundle.ps1' { ($releaseBundleCandidates -join '; ') }
+            'verify_bundle.ps1' { ($verifyBundleCandidates -join '; ') }
+            'docs_refresh.py' { ($docsRefreshCandidates -join '; ') }
+            default { $c.Path }
         }
         Write-Err ('[FAIL] Missing {0}: {1}' -f $c.Name, $exp)
         $missing += $c
@@ -91,7 +92,8 @@ Write-Host ''
 if ($null -ne $missing -and $missing.Count -eq 0) {
     Write-Ok '[RESULT] Integration check PASSED — environment configured correctly.'
     Write-Host 'You can now run: make -f Makefile.win release-bundle-now'
-} else {
+}
+else {
     $missCount = if ($null -eq $missing) { 0 } else { $missing.Count }
     Write-Err '[RESULT] Integration check FAILED.'
     Write-Warn ('Missing {0} component(s). Please review the list above.' -f $missCount)

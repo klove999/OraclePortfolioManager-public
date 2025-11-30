@@ -15,7 +15,7 @@
       "name": "▶ Run Portfolio Registry",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/analytics/portfolio_registry.py",
+      "program": "${workspaceFolder}/analytics/python/portfolio_registry.py",
       "console": "integratedTerminal"
     },
     {

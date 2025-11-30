@@ -81,7 +81,7 @@ Update documentation timestamps automatically:
 make docs-refresh
 ```
 
-This runs `automation/docs_refresh.py`, which ensures all Markdown files maintain consistent metadata and timestamps.
+This runs `automation/python/docs_refresh.py`, which ensures all Markdown files maintain consistent metadata and timestamps.
 
 ---
 
