@@ -1,119 +1,180 @@
-import os, time, json, webbrowser
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-import requests
+"""
+schwab_client.py
+
+Read-only Schwab client helpers for Oracle Portfolio Manager.
+
+This module builds on schwab_auth.client_from_token() and exposes
+higher-level functions to fetch:
+
+  - accounts
+  - positions (per account)
+  - orders/trades since a given date
+
+All functions are *read-only* and return raw JSON from Schwab.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from .schwab_auth import client_from_token  # same package
+
+
+def get_http_client():
+    """
+    Return an authenticated Schwab HTTP client using the saved token.
+    """
+    return client_from_token()
+
+
+def get_accounts_raw() -> Any:
+    """
+    Return the raw HTTP response JSON for all accounts.
+    """
+    c = get_http_client()
+    resp = c.get_accounts()
+    resp.raise_for_status()
+    return resp.json()
+
+
+def get_account_numbers() -> List[str]:
+    """
+    Convenience helper: extract accountNumbers from account JSON.
+    """
+    data = get_accounts_raw()
+    numbers: List[str] = []
+    if isinstance(data, list):
+        for item in data:
+            sa = item.get("securitiesAccount") or {}
+            acct = sa.get("accountNumber")
+            if isinstance(acct, str):
+                numbers.append(acct)
+    return numbers
+
+
+def get_positions_raw(account_number: str) -> Any:
+    """
+    Fetch raw positions JSON for a specific account.
+    Schwab's endpoint name / shape may vary; adapt as needed.
+    """
+    c = get_http_client()
+    # Placeholder; you will likely need to adjust the method name/params
+    resp = c.get_account_details(account_number, fields="positions")
+    resp.raise_for_status()
+    return resp.json()
+
+
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from .schwab_auth import client_from_token  # already there
+
+
+def get_http_client():
+    """
+    Return an authenticated Schwab HTTP client using the saved token.
+    """
+    return client_from_token()
+
+
 from datetime import datetime, timezone, timedelta
+from typing import Any, Optional
 
-AUTH_BASE = "https://api.schwab.com/oauth2"
-API_BASE  = "https://api.schwab.com/v1"
+from .schwab_auth import client_from_token
 
-class SchwabClient:
-    def __init__(self, client_id:str, redirect_uri:str, token_path:str):
-        self.client_id = client_id
-        self.redirect_uri = redirect_uri
-        self.token_path = token_path
-        self.session = requests.Session()
-        self.tokens = self._load_tokens()
 
-    # ---------- OAuth basics ----------
-    def _load_tokens(self):
-        if os.path.exists(self.token_path):
-            with open(self.token_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return {}
+def get_http_client():
+    return client_from_token()
 
-    def _save_tokens(self):
-        os.makedirs(os.path.dirname(self.token_path), exist_ok=True)
-        with open(self.token_path, "w", encoding="utf-8") as f:
-            json.dump(self.tokens, f, indent=2)
 
-    def _expired(self):
-        t = self.tokens.get("expires_at")
-        if not t: return True
-        return datetime.now(timezone.utc) >= datetime.fromisoformat(t.replace("Z","+00:00"))
+def _to_utc_iso_z(dt: datetime) -> str:
+    """
+    Convert a datetime to Schwab's expected ISO-8601 with Z suffix:
+      yyyy-MM-dd'T'HH:mm:ss.sssZ
 
-    def ensure_token(self):
-        if not self.tokens:
-            self._interactive_auth()
-        elif self._expired():
-            self._refresh()
-        self.session.headers.update({"Authorization": f"Bearer {self.tokens['access_token']}"})
+    We normalise to UTC and set milliseconds to .000 for simplicity.
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
 
-    def _interactive_auth(self):
-        # Authorization Code flow (exact URLs/params depend on Schwab’s spec)
-        auth_url = (
-            f"{AUTH_BASE}/authorize"
-            f"?response_type=code&client_id={self.client_id}"
-            f"&redirect_uri={self.redirect_uri}"
-            f"&scope=read"
-        )
-        print("[INFO] Opening browser for Schwab authorization...")
-        webbrowser.open(auth_url)
+    # Format with .000Z millis
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-        code = self._wait_for_code()
-        # Exchange for tokens (adjust endpoint per Schwab docs)
-        resp = requests.post(f"{AUTH_BASE}/token", data={
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": self.redirect_uri,
-            "client_id": self.client_id
-        })
-        resp.raise_for_status()
-        data = resp.json()
-        self._ingest_token_response(data)
 
-    def _refresh(self):
-        resp = requests.post(f"{AUTH_BASE}/token", data={
-            "grant_type": "refresh_token",
-            "refresh_token": self.tokens["refresh_token"],
-            "client_id": self.client_id
-        })
-        resp.raise_for_status()
-        data = resp.json()
-        self._ingest_token_response(data)
+# automation/python/brokers/schwab_client.py
 
-    def _ingest_token_response(self, data):
-        # Normalized structure; adjust keys per Schwab payload
-        access = data["access_token"]
-        refresh = data.get("refresh_token", self.tokens.get("refresh_token"))
-        expires_in = int(data.get("expires_in", 3600))
-        exp_at = (datetime.now(timezone.utc) + timedelta(seconds=expires_in)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        self.tokens = {"access_token": access, "refresh_token": refresh, "expires_at": exp_at}
-        self._save_tokens()
+from __future__ import annotations
 
-    # Simple local HTTP server to capture code
-    def _wait_for_code(self):
-        code_holder = {"code": None}
-        class Handler(BaseHTTPRequestHandler):
-            def do_GET(self_inner):
-                q = parse_qs(urlparse(self_inner.path).query)
-                code_holder["code"] = q.get("code", [None])[0]
-                self_inner.send_response(200); self_inner.end_headers()
-                self_inner.wfile.write(b"Schwab auth complete. You can close this tab.")
-        host, port = urlparse(self.redirect_uri).hostname, urlparse(self.redirect_uri).port
-        with HTTPServer((host, port), Handler) as httpd:
-            while not code_holder["code"]:
-                httpd.handle_request()
-            return code_holder["code"]
+import datetime as dt
+from typing import Any, Dict, List, Optional
 
-    # ---------- Example data calls (adjust endpoints/fields per docs) ----------
-    def get_accounts(self):
-        self.ensure_token()
-        r = self.session.get(f"{API_BASE}/accounts")
-        r.raise_for_status()
-        return r.json()
+from schwab.client import Client  # type: ignore
 
-    def get_orders(self, account_id, from_utc=None, to_utc=None):
-        self.ensure_token()
-        params = {}
-        if from_utc: params["from"] = from_utc
-        if to_utc:   params["to"]   = to_utc
-        r = self.session.get(f"{API_BASE}/accounts/{account_id}/orders", params=params)
-        r.raise_for_status()
-        return r.json()
+from .schwab_auth import client_from_token
 
-    def get_positions(self, account_id):
-        self.ensure_token()
-        r = self.session.get(f"{API_BASE}/accounts/{account_id}/positions")
-        r.raise_for_status()
-        return r.json()
+
+def get_orders_raw(
+    account_hash: str,
+    since: Optional[dt.datetime] = None,
+    until: Optional[dt.datetime] = None,
+    status: Optional[str] = None,
+    max_results: int = 200,
+) -> List[Dict[str, Any]]:
+    """
+    Fetch raw Schwab orders for a given account using schwab-py's
+    Client.get_orders_for_account(...) API.
+
+    Parameters
+    ----------
+    account_hash : str
+        Schwab account hash (NOT the raw account number).
+    since : datetime, optional
+        Lower bound on order entry time (UTC or timezone-aware).
+    until : datetime, optional
+        Upper bound on order entry time (UTC or timezone-aware).
+    status : str, optional
+        Optional single status filter (e.g. 'FILLED', 'WORKING', etc.).
+    max_results : int
+        Maximum number of orders to retrieve.
+
+    Returns
+    -------
+    list[dict]
+        Raw JSON objects returned by Schwab for each order.
+    """
+    c = client_from_token()
+
+    # Build kwargs using schwab-py's expected parameter names
+    kwargs: Dict[str, Any] = {}
+
+    if max_results is not None:
+        kwargs["max_results"] = max_results
+
+    if since is not None:
+        # schwab-py accepts datetime objects and converts them as needed.
+        kwargs["from_entered_datetime"] = since
+
+    if until is not None:
+        kwargs["to_entered_datetime"] = until
+
+    if status:
+        # Try to map to Client.Order.Status enum if possible; otherwise pass raw string.
+        try:
+            kwargs["status"] = Client.Order.Status[status]
+        except (KeyError, AttributeError):
+            kwargs["status"] = status
+
+    # NOTE: account_hash should already be the Schwab account hash, not the raw number.
+    resp = c.get_orders_for_account(account_hash, **kwargs)
+    resp.raise_for_status()
+    data = resp.json()
+
+    # The API may return a dict or list depending on context; normalize to list.
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        return [data]
+    return []
